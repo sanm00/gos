@@ -13,7 +13,7 @@ Gos 是一个轻量级的Go项目脚手架生成工具，帮助你快速创建�
 ## 安装
 
 ```bash
-go install github.com/wtpevxcrqw/gos@latest
+go install github.com/sanm00/gos@latest
 ```
 
 ## 快速开始
