@@ -1,15 +1,116 @@
-.
-├── cmd/ # 命令行工具
-├── config.yml # 配置文件
-├── internal/ # 内部代码
-│ ├── configs/ # 配置管理
-│ ├── handlers/ # HTTP处理器
-│ ├── middleware/ # HTTP中间件
-│ ├── models/ # 数据模型
-│ └── router/ # 路由管理
-├── pkg/ # 公共包
-│ ├── errors/ # 错误处理
-│ ├── logger/ # 日志工具
-│ └── response/ # 响应工具
-└── main.go # 入口文件
+# {{.ProjectName}}
 
+## 项目简介
+基于 Go 语言开发的 Web 服务项目，采用模块化设计和标准化项目结构。
+
+## 项目结构
+```
+.
+├── cmd/           # 命令行工具
+├── config.yml     # 配置文件
+├── internal/      # 内部代码
+│   ├── configs/   # 配置管理
+│   ├── handlers/  # HTTP处理器
+│   ├── middleware/# HTTP中间件
+│   ├── models/    # 数据模型
+│   └── router/    # 路由管理
+├── pkg/           # 公共包
+│   ├── errors/    # 错误处理
+│   ├── logger/    # 日志工具
+│   └── response/  # 响应工具
+└── main.go        # 入口文件
+```
+
+## 快速开始
+
+### 环境要求
+- Go 1.16+
+- MySQL 5.7+ (可选)
+- Redis (可选)
+
+### 安装
+```bash
+# 下载依赖
+go mod tidy
+```
+
+### 运行
+```bash
+# 复制配置文件
+cp config.yml.example config.yml
+
+# 运行服务
+go run main.go
+
+# 测试
+curl http://localhost:8080/ping
+```
+
+## 开发指南
+
+### 添加新接口
+1. 在 `internal/handlers` 添加处理器
+2. 在 `internal/router` 注册路由
+3. 在 `internal/models` 添加数据模型（如需要）
+
+### 配置说明
+修改 `config.yml` 配置：
+
+```yaml
+server:
+  port: 8080
+  mode: development
+
+database:
+  host: localhost
+  port: 3306
+  name: dbname
+  user: root
+  password: password
+
+redis:
+  host: localhost
+  port: 6379
+  password: password
+  db: 0
+
+level:
+  info  # debug, info, warn, error
+  format: json # text or json
+  output: stdout  # stdout or file path
+  file:
+    path: ./logs
+    max_size: 100    # MB
+    max_age: 7       # days
+    max_backups: 10  # 最大备份数
+
+```
+
+## 项目扩展
+
+### 添加新模块
+1. 在相应目录创建新文件
+2. 实现功能代码
+3. 添加单元测试
+4. 更新文档
+
+### 使用中间件
+在 `internal/middleware` 中添加新的中间件：
+```go
+func AuthMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        // 中间件逻辑
+    }
+}
+```
+
+## 部署
+
+### Docker 部署
+```bash
+# 构建镜像
+docker build -t {{.ProjectName}} .
+
+# 运行容器
+docker run -p 8080:8080 {{.ProjectName}}
+```
