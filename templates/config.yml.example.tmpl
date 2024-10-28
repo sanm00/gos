@@ -1,0 +1,35 @@
+# 服务器配置
+server:
+  port: 8080
+  mode: debug  # debug or release
+
+# 日志配置
+log:
+  level: info  # debug, info, warn, error
+  format: json # text or json
+  output: stdout  # stdout or file path
+  file:
+    path: ./logs
+    max_size: 100    # MB
+    max_age: 7       # days
+    max_backups: 10  # 最大备份数
+
+# 数据库配置
+database:
+  driver: mysql  # mysql or postgres
+  host: localhost
+  port: 3306
+  username: root
+  password: password
+  dbname: myapp
+  max_open_conns: 100
+  max_idle_conns: 10
+  conn_max_lifetime: 3600  # seconds
+
+# Redis配置
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 100

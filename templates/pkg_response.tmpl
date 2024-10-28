@@ -1,0 +1,62 @@
+package response
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+// Response 标准响应结构
+type Response struct {
+	Code    int         `json:"code"`    // 业务状态码
+	Message string      `json:"message"` // 响应信息
+	Data    interface{} `json:"data"`    // 响应数据
+}
+
+// StandardCode 标准状态码
+const (
+	CodeSuccess = 0    // 成功
+	CodeError   = 1000 // 一般错误
+	CodeParams  = 1001 // 参数错误
+	CodeAuth    = 1002 // 认证错误
+)
+
+// Success 返回成功响应
+func Success(w http.ResponseWriter, data interface{}) {
+	JSON(w, http.StatusOK, Response{
+		Code:    CodeSuccess,
+		Message: "success",
+		Data:    data,
+	})
+}
+
+// Error 返回错误响应
+func Error(w http.ResponseWriter, code int, message string) {
+	JSON(w, http.StatusOK, Response{
+		Code:    code,
+		Message: message,
+		Data:    nil,
+	})
+}
+
+// ParamError 返回参数错误响应
+func ParamError(w http.ResponseWriter, message string) {
+	Error(w, CodeParams, message)
+}
+
+// AuthError 返回认证错误响应
+func AuthError(w http.ResponseWriter, message string) {
+	Error(w, CodeAuth, message)
+}
+
+// JSON 返回JSON���应
+func JSON(w http.ResponseWriter, httpStatus int, data interface{}) {
+	// 设置响应头
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(httpStatus)
+
+	// 序列化并写入响应
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

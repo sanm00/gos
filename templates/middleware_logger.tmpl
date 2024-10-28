@@ -1,0 +1,32 @@
+package middleware
+
+import (
+	"net/http"
+	"time"
+
+	"{{.ProjectName}}/pkg/logger"
+)
+
+// RequestLogger 是一个记录HTTP请求信息的中间件
+func RequestLogger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		// 包装ResponseWriter以捕获状态码
+		wrapped := wrapResponseWriter(w)
+
+		// 处理请求
+		next.ServeHTTP(wrapped, r)
+
+		// 记录请求信息
+		logger.WithFields(logger.Fields{
+			"method":     r.Method,
+			"path":       r.URL.Path,
+			"query":      r.URL.RawQuery,
+			"ip":         r.RemoteAddr,
+			"user_agent": r.UserAgent(),
+			"status":     wrapped.status,
+			"duration":   time.Since(start).String(),
+		}).Info("HTTP Request")
+	})
+}

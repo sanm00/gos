@@ -1,0 +1,42 @@
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"{{.ProjectName}}/internal/configs"
+	"{{.ProjectName}}/internal/router"
+	"{{.ProjectName}}/pkg/logger"
+)
+
+func main() {
+	// 加载配置
+	cfg, err := configs.Load("config.yml")
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	// 配置日志
+	logger.Setup(
+		cfg.Log.Level,
+		cfg.Log.Format,
+		cfg.Log.Output,
+		&logger.FileConfig{
+			Path:       cfg.Log.File.Path,
+			MaxSize:    cfg.Log.File.MaxSize,
+			MaxAge:     cfg.Log.File.MaxAge,
+			MaxBackups: cfg.Log.File.MaxBackups,
+		},
+	)
+
+	// 初始化路由
+	r := router.NewRouter()
+
+	// 启动服务器
+	addr := fmt.Sprintf(":%d", cfg.Server.Port)
+	logger.Info("Server is running on port", addr)
+	err = http.ListenAndServe(addr, r)
+	if err != nil {
+		logger.Fatal(err)
+	}
+}

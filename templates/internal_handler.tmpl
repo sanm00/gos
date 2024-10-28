@@ -1,0 +1,40 @@
+package handlers
+
+import (
+	"net/http"
+
+	"github.com/gorilla/schema"
+	"{{.ProjectName}}/pkg/errors"
+	"{{.ProjectName}}/pkg/logger"
+	"{{.ProjectName}}/pkg/response"
+)
+
+// PingHandler 处理ping请求
+func PingHandler(w http.ResponseWriter, r *http.Request) {
+	response.Success(w, "ping")
+}
+
+// ExampleHandler 处理示例请求
+func ExampleHandler(w http.ResponseWriter, r *http.Request) {
+	var params struct {
+		Name string `schema:"name"`
+	}
+
+	decoder := schema.NewDecoder()
+	err := decoder.Decode(&params, r.URL.Query())
+	if err != nil {
+		logger.Error("解析参数失败:", err)
+		response.Error(w, errors.ErrBadRequest.Code, "Invalid parameters")
+		return
+	}
+
+	if params.Name == "" {
+		response.Error(w, errors.ErrBadRequest.Code, "Name is required")
+		return
+	}
+
+	data := map[string]string{
+		"message": "Hello, " + params.Name,
+	}
+	response.Success(w, data)
+}

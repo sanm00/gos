@@ -1,0 +1,32 @@
+package middleware
+
+import (
+	"net/http"
+	"runtime/debug"
+
+	"{{.ProjectName}}/pkg/errors"
+	"{{.ProjectName}}/pkg/logger"
+	"{{.ProjectName}}/pkg/response"
+)
+
+// Recovery 是一个恢复panic的中间件
+func Recovery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				// 记录panic信息和堆栈跟踪
+				logger.WithFields(logger.Fields{
+					"error":   err,
+					"stack":   string(debug.Stack()),
+					"path":    r.URL.Path,
+					"method":  r.Method,
+				}).Error("Panic recovered")
+
+				// 返回500错误
+				response.Error(w, errors.ErrInternal.Code, errors.ErrInternal.Message)
+			}
+		}()
+
+		next.ServeHTTP(w, r)
+	})
+}

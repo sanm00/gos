@@ -1,0 +1,18 @@
+package middleware
+
+import (
+	"net/http"
+
+	"{{.ProjectName}}/pkg/errors"
+	"{{.ProjectName}}/pkg/response"
+)
+
+// NotFoundHandler 处理404错误
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	response.Error(w, errors.ErrNotFound.Code, errors.ErrNotFound.Message)
+}
+
+// MethodNotAllowedHandler 处理405错误
+func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
+	response.Error(w, http.StatusMethodNotAllowed, "Method not allowed")
+}

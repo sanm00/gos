@@ -1,0 +1,45 @@
+package router
+
+import (
+	"github.com/gorilla/mux"
+	"net/http"
+	
+	"{{.ProjectName}}/internal/handlers"
+	"{{.ProjectName}}/internal/middleware"
+)
+
+// NewRouter 初始化并返回路由器
+func NewRouter() *mux.Router {
+	r := mux.NewRouter()
+	
+	// 添加全局中间件
+	r.Use(middleware.Recovery)
+	r.Use(middleware.RequestLogger)
+	
+	// 设置自定义404和405处理器
+	r.NotFoundHandler = http.HandlerFunc(middleware.NotFoundHandler)
+	r.MethodNotAllowedHandler = http.HandlerFunc(middleware.MethodNotAllowedHandler)
+	
+	// API 路由组
+	api := r.PathPrefix("/api").Subrouter()
+	
+	// 注册路由
+	registerRoutes(api)
+
+	// ping
+	r.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
+	
+	return r
+}
+
+// registerRoutes 注册所有路由
+func registerRoutes(r *mux.Router) {
+	// 示例路由
+	r.HandleFunc("/example", handlers.ExampleHandler).Methods("GET")
+	
+	// TODO: 在这里添加更多路由
+	// r.HandleFunc("/users", handlers.ListUsers).Methods("GET")
+	// r.HandleFunc("/users/{id}", handlers.GetUser).Methods("GET")
+	// r.HandleFunc("/users", handlers.CreateUser).Methods("POST")
+	// ...
+}
